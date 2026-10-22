@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Medical Alert – working prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Medical Alert</h1>
+  <p class="sub">Emergency medical information for responders, shared only with the patient’s advance consent.</p>
+  <div class="demo">Working prototype. It runs only in your browser and stores nothing on a server. Use made-up details, never real health information.</div>
+
+  <nav role="tablist" aria-label="Prototype sections">
+    <button role="tab" id="t-patient" aria-selected="true" data-tab="patient">Patient</button>
+    <button role="tab" id="t-responder" aria-selected="false" data-tab="responder">Responder</button>
+    <button role="tab" id="t-audit" aria-selected="false" data-tab="audit">Access log</button>
+  </nav>
+
+  <!-- PATIENT -->
+  <div id="patient">
+    <section class="panel">
+      <h2>Emergency profile</h2>
+      <label for="name">Full name</label><input id="name" autocomplete="off">
+      <div class="row">
+        <div><label for="blood">Blood group</label>
+          <select id="blood"><option>Unknown</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select></div>
+        <div><label for="dob">Date of birth</label><input id="dob" type="date"></div>
+      </div>
+      <label for="allergies">Allergies (drugs first)</label><textarea id="allergies" placeholder="e.g. Penicillin, latex"></textarea>
+      <label for="conditions">Chronic conditions</label><textarea id="conditions" placeholder="e.g. Type 1 diabetes, epilepsy"></textarea>
+      <label for="meds">Current medication</label><textarea id="meds" placeholder="e.g. Insulin, warfarin"></textarea>
+      <label for="implants">Implants or devices</label><input id="implants" placeholder="e.g. Pacemaker">
+      <div class="row">
+        <div><label for="ecname">Emergency contact name</label><input id="ecname"></div>
+        <div><label for="ecphone">Emergency contact phone</label><input id="ecphone" inputmode="tel"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Consent</h2>
+      <p>Choose what responders may see. You can change or withdraw this at any time.</p>
+      <label class="check"><input type="checkbox" id="c-basic" checked><span>Anyone who scans may see my name, blood group, allergies and emergency contact.</span></label>
+      <label class="check"><input type="checkbox" id="c-full" checked><span>Verified doctors, nurses and paramedics may also see my conditions, medication and implants.</span></label>
+      <label class="check"><input type="checkbox" id="c-notify" checked><span>Notify my emergency contact each time my profile is viewed.</span></label>
+      <label class="check"><input type="checkbox" id="c-agree"><span><strong>I understand and agree to this sharing.</strong></span></label>
+      <button class="btn red" id="save">Save and create QR code</button>
+      <button class="btn ghost" id="demo">Fill with demo patient</button>
+      <div id="p-msg" role="status"></div>
+    </section>
+
+    <section class="panel hidden" id="qrpanel">
+      <h2>Your QR code</h2>
+      <div id="qrbox">
+        <div id="qr" aria-label="QR code"></div>
+        <div>
+          <p>The code holds only this random link, no medical data:</p>
+          <p><code id="link"></code></p>
+          <p id="consent-stamp" class="sub"></p>
+          <button class="btn" id="regen">Replace code</button>
+          <button class="btn ghost" id="revoke">Revoke code</button>
+          <button class="btn ghost" id="go-scan">Try a scan</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RESPONDER -->
+  <div id="responder" class="hidden">
+    <section class="panel">
+      <h2>Scan a patient</h2>
+      <p>On a real phone, the camera opens the link from the QR code. Here, paste the link or the code to simulate it.</p>
+      <label for="token">QR link or code</label><input id="token" autocomplete="off">
+      <label for="role">Your role</label>
+      <select id="role"><option>Doctor</option><option>Nurse</option><option>Paramedic</option></select>
+      <label for="regno">Registration number</label><input id="regno" placeholder="Demo: any value counts as verified" autocomplete="off">
+      <label class="check"><input type="checkbox" id="bg"><span><strong>Emergency override.</strong> I can’t log in and this is life-threatening.</span></label>
+      <div id="bg-reason" class="hidden"><label for="reason">Reason for override</label><input id="reason" autocomplete="off"></div>
+      <button class="btn red" id="open">Open emergency summary</button>
+      <div id="r-msg" role="status"></div>
+      <div id="result"></div>
+    </section>
+  </div>
+
+  <!-- AUDIT -->
+  <div id="audit" class="hidden">
+    <section class="panel">
+      <h2>Who viewed this profile</h2>
+      <p class="sub">Every view is recorded and the patient is told afterwards.</p>
+      <div id="notify"></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Time</th><th>Role</th><th>Access</th><th>Detail</th></tr></thead>
+        <tbody id="log"></tbody></table></div>
+      <p id="log-empty" class="sub" style="margin-top:12px">No views yet. Create a code, then try a scan.</p>
+    </section>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
